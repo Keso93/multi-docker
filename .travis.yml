@@ -1,0 +1,23 @@
+sudo: required
+services:
+    - docker
+
+before_install:
+    - gem install bundler
+    - docker build -t keso93/react-test -f ./client/Dockerfile.dev .
+
+script:
+    - docker run -e CI=true keso93/react-test npm run test
+
+after_success:
+    - docker build -t keso93/multi-client ./client
+    - docker build -t keso93/multi-nginx ./nginx
+    - docker build -t keso93/multi-worker ./worker
+    - docker build -t keso93/multi-server ./server
+    # Log in to the docker CLI
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    # Take those images and push them to docker hub
+    - docker push keso93/multi-client
+    - docker push keso93/multi-nginx
+    - docker push keso93/multi-worker
+    - docker push keso93/multi-server
