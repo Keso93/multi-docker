@@ -4,7 +4,7 @@ services:
 
 before_install:
     - gem install bundler
-    - docker build -t keso93/react-test -f ./client/Dockerfile.dev 
+    - docker build -t keso93/react-test -f ./client/Dockerfile.dev .
 
 script:
     - docker run -e CI=true keso93/react-test npm test
